@@ -15,14 +15,12 @@ function App() {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          // Fetching both APIs
           const responseBogota = await fetch('https://api.citybik.es/v2/networks/tembici-bogota');
           const responseEncicla = await fetch('https://api.citybik.es/v2/networks/encicla');
 
           const dataBogota = await responseBogota.json();
           const dataEncicla = await responseEncicla.json();
 
-          // Combine data
           const combinedData = [
             {
               id: dataBogota.network.id,

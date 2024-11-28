@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/CategoriesSection.css';
-import img from '../assets/Anthem.jpg';  // Asegúrate de que la ruta sea correcta
+import img from '../assets/Anthem.jpg';
 
 const categories = [
   { name: 'RUTA', image: `${img}` },
