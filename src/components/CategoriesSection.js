@@ -12,6 +12,7 @@ const categories = [
 
 const CategoriesSection = () => (
   <section className="categories-section">
+        <h2>Bicicletas para diferentes terrenos</h2>
     <div className="categories-grid">
       {categories.map((category, index) => (
         <div key={index} className="category-card">

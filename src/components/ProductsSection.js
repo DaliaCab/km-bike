@@ -28,6 +28,7 @@ const products = [
 
 const ProductsSection = () => (
   <section className="products-section">
+    <h2>Bicicletas más usadas por deportistas</h2>
     <div className="products-grid">
       {products.map((product, index) => (
         <div key={index} className="product-card">
