@@ -12,7 +12,6 @@ const Footer = () => (
       <div className="footer-links">
         <h2>Términos y Condiciones</h2>
         <h2>Política de Privacidad</h2>
-        <h2>Contacto</h2>
       </div>
       <p>&copy; 2024 KMBIKE. Todos los derechos reservados.</p>
     </div>
