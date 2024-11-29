@@ -3,42 +3,57 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './components/Home';
-import Blog from './pages/Blog';
+import About from './pages/About';
 import NotFound from './components/NotFound';
 import './styles/Bicicletas.css';
 
 function App() {
   const Bicicletas = () => {
-    const [bicicletas, setBicicletas] = useState([]);
+    const [estaciones, setEstaciones] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [error, setError] = useState(null);
+    const [filtroBogota, setFiltroBogota] = useState(''); 
+    const [filtroMedellin, setFiltroMedellin] = useState('');
+    
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const responseBogota = await fetch('https://api.citybik.es/v2/networks/tembici-bogota');
-          const responseEncicla = await fetch('https://api.citybik.es/v2/networks/encicla');
+          const [responseBogota, responseEncicla] = await Promise.all([
+            fetch('https://api.citybik.es/v2/networks/tembici-bogota'),
+            fetch('https://api.citybik.es/v2/networks/encicla'),
+          ]);
+
+          if (!responseBogota.ok || !responseEncicla.ok) {
+            throw new Error(`Error en las solicitudes: ${responseBogota.status} ${responseEncicla.status}`);
+          }
 
           const dataBogota = await responseBogota.json();
           const dataEncicla = await responseEncicla.json();
 
-          const combinedData = [
-            {
-              id: dataBogota.network.id,
-              name: dataBogota.network.name,
-              city: dataBogota.network.location.city,
-              country: dataBogota.network.location.country,
-            },
-            {
-              id: dataEncicla.network.id,
-              name: dataEncicla.network.name,
-              city: dataEncicla.network.location.city,
-              country: dataEncicla.network.location.country,
-            },
-          ];
+          const estacionesBogota = dataBogota.network.stations.map((station) => ({
+            id: station.id,
+            name: station.name,
+            city: "Bogotá",
+            country: "Colombia",
+            latitude: station.latitude,
+            longitude: station.longitude,
+            freebikes: station.free_bikes,
+            emptyslots: station.empty_slots,
+          }));
 
-          setBicicletas(combinedData);
-        } catch (error) {
-          console.error('Error al obtener los datos:', error);
+          const estacionesMedellin = dataEncicla.network.stations.map((station) => ({
+            id: station.id,
+            name: station.name,
+            city: "Medellín",
+            country: "Colombia",
+            latitude: station.latitude,
+            longitude: station.longitude,
+            freebikes: station.free_bikes,
+          }));
+
+          setEstaciones([...estacionesBogota, ...estacionesMedellin]);
+        } catch (err) {
+          setError(err.message);
         } finally {
           setLoading(false);
         }
@@ -51,24 +66,97 @@ function App() {
       return <div>Cargando...</div>;
     }
 
+    if (error) {
+      return <div>Error al cargar los datos: {error}</div>;
+    }
+
+    const opcionesBogota = estaciones
+      .filter((estacion) => estacion.city === "Bogotá")
+      .map((estacion) => estacion.name);
+
+    const opcionesMedellin = estaciones
+      .filter((estacion) => estacion.city === "Medellín")
+      .map((estacion) => estacion.name);
+
+  
+    const estacionesFiltradas = estaciones.filter((estacion) => {
+      if (filtroBogota) {
+        return estacion.city === "Bogotá" && estacion.name === filtroBogota;
+      }
+      if (filtroMedellin) {
+        return estacion.city === "Medellín" && estacion.name === filtroMedellin;
+      }
+      return true;
+    });
+
     return (
       <div>
-        <h1>Bicicletas en Colombia</h1>
+        <h1>Bicicletas en Bogotá y Medellín</h1>
+
+        <div className="filtros">
+          <div>
+            <label htmlFor="select-bogota">Seleccionar en Bogotá:</label>
+            <select
+              id="select-bogota"
+              value={filtroBogota}
+              onChange={(e) => {
+                setFiltroBogota(e.target.value);
+                setFiltroMedellin('');
+              }}
+            >
+              <option value="">Seleccione una estación</option>
+              {opcionesBogota.map((opcion) => (
+                <option key={opcion} value={opcion}>
+                  {opcion}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="select-medellin">Seleccionar en Medellín:</label>
+            <select
+              id="select-medellin"
+              value={filtroMedellin}
+              onChange={(e) => {
+                setFiltroMedellin(e.target.value);
+                setFiltroBogota('');
+              }}
+            >
+              <option value="">Seleccione una estación</option>
+              {opcionesMedellin.map((opcion) => (
+                <option key={opcion} value={opcion}>
+                  {opcion}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div className="tarjetas-container">
-          {bicicletas.map((bicicleta) => {
-            const googleMapsLink =` https://www.google.com/maps?q=${bicicleta.city},${bicicleta.country}`
-            return (
-              <div key={bicicleta.id} className="tarjeta">
-                <h2>{bicicleta.name}</h2>
-                <p>
-                  <strong>Ubicación:</strong> {bicicleta.city}, {bicicleta.country}
-                </p>
-                <a href={googleMapsLink} target="_blank" rel="noopener noreferrer">
-                  Ver en Google Maps
-                </a>
-              </div>
-            );
-          })}
+          {estacionesFiltradas.map((estacion) => (
+            <div key={estacion.id} className="tarjeta">
+              <h2>{estacion.name}</h2>
+              <p>
+                <strong>Ciudad:</strong> {estacion.city}
+              </p>
+              <p>
+                <strong>País:</strong> {estacion.country}
+              </p>
+              <p>
+                <strong>Bicicletas disponibles:</strong> {estacion.freebikes}
+              </p>
+              <p>
+                <strong>Espacios disponibles:</strong> {estacion.emptyslots}
+              </p>
+              <a
+                href={`https://www.google.com/maps?q=${estacion.latitude},${estacion.longitude}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver en Google Maps
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -81,7 +169,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/bicicletas" element={<Bicicletas />} />
-          <Route path="/blog" element={<Blog />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
