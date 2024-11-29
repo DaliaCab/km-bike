@@ -23,7 +23,7 @@ return (
             <Link to="/">Home</Link>
         </li>
         <li>
-            <Link to="/bicicletas">Bicicletas</Link>
+            <Link to="/bicicletas">Estaciones</Link>
         </li>
         <li>
             <Link to="/about">Acerca de nosotras</Link>
