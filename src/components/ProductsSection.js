@@ -7,19 +7,19 @@ import img4 from '../assets/conten.jpg'
 
 const products = [
   {
-    name: 'ANTHEM ADVANCED PRO 29 1 2023',
+    name: 'ANTHEM ADVANCED PRO 29',
     currentPrice: '$25.043.550',
     oldPrice: '$29.463.000',
     image: `${img}`,
   },
   {
-    name: 'BICICLETA CONTEND SL 2 DISC 2023',
+    name: 'BICICLETA CONTEND SL 2 DISC',
     currentPrice: '$4.743.000',
     oldPrice: '$6.200.000',
     image: `${img4}`,
   },
   {
-    name: 'REIGN SX 2023',
+    name: 'REIGN SX',
     currentPrice: '$20.990.750',
     oldPrice: '$24.695.000',
     image: `${img3}`,
