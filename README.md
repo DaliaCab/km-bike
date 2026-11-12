@@ -192,6 +192,6 @@ El proyecto incluye un archivo `netlify.toml` con la regla de redirección neces
 ## 👥 Autores y Créditos
 
 Proyecto desarrollado con ❤️ por 
-T4ti4n4
-DaliaCab
-pannzzz
+T4ti4n4, 
+, DaliaCab
+y pannzzz
